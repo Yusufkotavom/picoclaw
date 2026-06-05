@@ -63,6 +63,13 @@ func computeContextUsage(agent *AgentInstance, sessionKey string) *bus.ContextUs
 
 	// summarizeAt = soft summarization trigger: matches maybeSummarize's
 	// threshold (contextWindow * SummarizeTokenPercent / 100).
+	//
+	// NOTE: The engine's maybeSummarize compares this threshold against
+	// history-message tokens only (via estimateTokens), while UsedTokens
+	// (shown in /context) includes system prompt, summary, and tool
+	// definitions on top of history tokens.  A "Used > SummarizeAt" display
+	// does not necessarily mean summarization will fire — the engine may
+	// still consider the history-token budget to be under threshold.
 	summarizeAt := contextWindow * agent.SummarizeTokenPercent / 100
 	if summarizeAt <= 0 {
 		summarizeAt = compressAt
